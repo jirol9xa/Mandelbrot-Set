@@ -1,7 +1,7 @@
 enum WindowSettings
 {
-    width  = 2400,//1200,
-    heigth = 1600//800
+    width  = 900,
+    heigth = 600
 };
 
 enum ERRORS

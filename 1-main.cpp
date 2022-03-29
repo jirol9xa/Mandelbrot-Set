@@ -7,8 +7,6 @@ int main()
 {
     uint32_t Pixels[WindowSettings::heigth * WindowSettings::width] = {};
 
-    fillImage(Pixels);
-
     //for (int i = 0; i < WindowSettings::heigth * WindowSettings::width; ++i)
     //{
     //    printf("%d ", Pixels[i]);

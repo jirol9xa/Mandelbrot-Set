@@ -9,9 +9,11 @@
 
 
 const int n_max     = 256;
-const double dx     = 6. / WindowSettings::width, dy = 4. / WindowSettings::heigth;
 const double r_max  = 100.;
-const double  scale = 1.;   // mb not used
+
+double dx     = 6. / WindowSettings::width, dy = 4. / WindowSettings::heigth;
+double  scale = 1.;   // mb not used
+double xC = 0., yC = 0.;
 
 
 int getColor(double x0, double y0)
@@ -27,7 +29,7 @@ int getColor(double x0, double y0)
 
         if (X + Y >= r_max)
         {
-            printf("Here n = %d\n", n);
+            //printf("Here n = %d\n", n);
             return n;
         }
 
@@ -43,13 +45,28 @@ int fillImage(uint32_t *Pixels)
 {
     PIXELS_CHECK(Pixels);
 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))     xC -= 10.;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))    xC += 10.;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))       yC -= 10.;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))     yC += 10.;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))        
+    {
+        scale -= 0.1;
+        dx *= scale; dy *= scale;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))        
+    {
+        scale += 0.1; 
+        dx *= scale; dy *= scale;
+    }
+
     for (int yi = 0; yi < WindowSettings::heigth; ++yi, Pixels += WindowSettings::width)
     {
-        double  x0 = (-1. * WindowSettings::width / 2) * dx * scale;
-        double  y0 = ((double) yi - 1. * WindowSettings::heigth / 2) * dy * scale;
+        double  x0 = (-1. * WindowSettings::width / 2 + xC) * dx;
+        double  y0 = ((double) yi - 1. * WindowSettings::heigth / 2 + yC) * dy;
 
         fillString(Pixels, x0, y0);
-        //printf("One more string\n");
     }
 
     return 0;
@@ -64,40 +81,8 @@ int fillString(uint32_t *Pixels, double x0, double y0)
     {
         //printf("one more pixel\n");
         int n = getColor(x0, y0);
-        Pixels[xi] = 0xFF + (sin(n) + n * n + tan(n)) * 16;
+        Pixels[xi] = (sin(n)) * 256 + n + tan(n) * 0x00228322  + tan(n * n + log10(n + 1) * 512) + cos(pow(tan(n * n), 2)) + 0xFF000000;
     }
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-//int main(const int argc, const char *argv[])
-//{
-//    sf::RenderWindow window(sf::VideoMode(600, 800), "Mondel cheta");
-//    sf::CircleShape shape(100.f);
-//    shape.setFillColor(sf::Color::Red);
-//
-//    while (window.isOpen())
-//    {
-//        sf::Event event;
-//        while (window.pollEvent(event))
-//        {
-//            if (event.type == sf::Event::Closed)    window.close();
-//        }
-//
-//        window.clear();
-//        window.draw(shape);
-//        window.display();
-//    }
-//
-//    return 0;
-//}

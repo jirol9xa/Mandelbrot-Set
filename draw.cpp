@@ -8,10 +8,10 @@ int  drawAss      (uint32_t *Pixels)
 
     sf::RenderWindow window(sf::VideoMode(WindowSettings::width, WindowSettings::heigth), "BlackAss");
     
-    //sf::Texture texture;
-    //texture.create(WindowSettings::width, WindowSettings::heigth);          // creating texture
-    //
-    //sf::Sprite  sprite(texture);                                            // creating sprite that will display texture
+    sf::Texture texture;
+    texture.create(WindowSettings::width, WindowSettings::heigth);          // creating texture
+    
+    sf::Sprite  sprite(texture);                                            // creating sprite that will display texture
 
     while (window.isOpen())
     {
@@ -22,17 +22,9 @@ int  drawAss      (uint32_t *Pixels)
 
         }
 
-        sf::Image image;
-        image.create(WindowSettings::width, WindowSettings::heigth, (const uint8_t*) Pixels);    // creating image before drawing in window 
-        image.saveToFile("Van-Cock.png");
-        
-        sf::Texture texture;
-        texture.loadFromFile("Van-Cock.png");
+        fillImage(Pixels);
 
-        sf::Sprite sprite;
-        sprite.setTexture(texture);
-
-        //texture.update(Pixels);
+        texture.update((const uint8_t *) Pixels);
 
         window.clear();
         window.draw(sprite);
