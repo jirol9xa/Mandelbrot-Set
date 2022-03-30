@@ -2,16 +2,16 @@
 #include <1-noSSE.hpp>
 
 
-int  drawAss      (uint32_t *Pixels)
+int  drawAss      (Mandelbrot *mbrot)
 {
-    PIXELS_CHECK(Pixels);
+    PIXELS_CHECK(mbrot);
 
-    sf::RenderWindow window(sf::VideoMode(WindowSettings::width, WindowSettings::heigth), "BlackAss");
+    sf::RenderWindow window(sf::VideoMode(mbrot->width, mbrot->heigth), "BlackAss");
     
     sf::Texture texture;
-    texture.create(WindowSettings::width, WindowSettings::heigth);          // creating texture
+    texture.create(mbrot->width, mbrot->heigth);    // creating texture
     
-    sf::Sprite  sprite(texture);                                            // creating sprite that will display texture
+    sf::Sprite  sprite(texture);                                                    // creating sprite that will display texture
 
     while (window.isOpen())
     {
@@ -22,13 +22,16 @@ int  drawAss      (uint32_t *Pixels)
 
         }
 
-        fillImage(Pixels);
+        if (fillImage(mbrot))   window.close();
 
-        texture.update((const uint8_t *) Pixels);
+        texture.update((const uint8_t *) (mbrot->Pix_begin));
 
         window.clear();
         window.draw(sprite);
         window.display();
+
+        mbrot->Pixels = mbrot->Pix_begin;
+
     }
 
     return 0;

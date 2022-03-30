@@ -1,28 +1,41 @@
-enum WindowSettings
+struct Mandelbrot
 {
-    width  = 900,
-    heigth = 600
+        
+    enum errors
+    {
+        nullptr_pixel = 1,
+        nullptr_array = 2,
+        quit_cmd      = 3
+    };
+
+    const int width  = 1200;      // window
+    const int heigth = 800;       //settings
+
+    const int n_max     = 256;
+    const double r_max  = 100.;
+
+    double dx    = 6. / width, dy = 4. / heigth;
+    double scale = 1.;
+    double xC    = 0., yC = 0.;        // coordinates of center of picture
+
+    uint32_t *Pixels = nullptr;
+    uint32_t *Pix_begin = Pixels;
 };
 
-enum ERRORS
-{
-    nullptrPixel = 1,
-    nullptrArray = 2,
-};
-
-
-#define PIXELS_CHECK(Pixels)                        \
+#define PIXELS_CHECK(mbrot)                         \
 {                                                   \
-    if (!Pixels)                                    \
+    if (!mbrot->Pixels)                             \
     {                                               \
         printf("Array with pixels is nullptr\n");   \
-        return ERRORS::nullptrArray;                \
+        return mbrot->errors::nullptr_array;        \
     }                                               \
 }
 
 
-int  getGetColor  (double x, double y);
-int  fillImage    (uint32_t  *Pixels);
-int  fillString   (uint32_t  *Pixels, double x0, double y0);
-int  drawAss      (uint32_t  *Pixels); 
+int  mbrotCtor    (Mandelbrot *mbrot);
+int  mbrotDtor    (Mandelbrot *mbrot);
+int  getGetColor  (Mandelbrot *mbrot, double x, double y);
+int  fillImage    (Mandelbrot *mbrot);
+int  fillString   (Mandelbrot *mbrot, double x0, double y0);
+int  drawAss      (Mandelbrot *mbrot); 
 

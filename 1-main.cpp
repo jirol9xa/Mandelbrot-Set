@@ -5,14 +5,11 @@
 
 int main()
 {
-    uint32_t Pixels[WindowSettings::heigth * WindowSettings::width] = {};
+    Mandelbrot  mbrot = {};
+    mbrotCtor(&mbrot);
 
-    //for (int i = 0; i < WindowSettings::heigth * WindowSettings::width; ++i)
-    //{
-    //    printf("%d ", Pixels[i]);
-    //}
-
-    drawAss(Pixels);
+    drawAss(&mbrot);
     
+    mbrotDtor(&mbrot);
     return 0;
 }

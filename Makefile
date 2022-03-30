@@ -21,3 +21,5 @@ clear:
 	$(CC)	-c	1-noSSE.cpp $(I_FLAG)
 draw.o:			draw.cpp
 	$(CC)	-c 	draw.cpp	$(I_FLAG)
+test.o:			test.cpp
+	$(CC)	-c	test.cpp	$(I_FLAG)
