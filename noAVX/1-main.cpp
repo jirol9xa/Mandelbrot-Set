@@ -1,6 +1,6 @@
 #include "stdio.h"
 #include <SFML/Graphics.hpp>
-#include <1-noSSE.hpp>
+#include <Mandelbrot_noAVX.hpp>
 
 
 int main()

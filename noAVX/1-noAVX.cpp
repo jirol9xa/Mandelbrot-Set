@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include <1-noSSE.hpp>
+#include <Mandelbrot_noAVX.hpp>
 #include "stdio.h"
 #include <cmath>
 
@@ -30,8 +30,7 @@ int  mbrotCtor(Mandelbrot *mbrot)
         return -1;
     }
 
-    mbrot->Pix_begin = (uint32_t *) calloc(WIDTH(mbrot) * HEIGTH(mbrot) , sizeof(uint32_t));
-    mbrot->Pixels    = mbrot->Pix_begin;
+    mbrot->Pixels = (uint32_t *) calloc(WIDTH(mbrot) * HEIGTH(mbrot) , sizeof(uint32_t));
     
     return 0;
 }
@@ -46,7 +45,7 @@ int mbrotDtor(Mandelbrot *mbrot)
         return -1;
     }
 
-    free(mbrot->Pix_begin);
+    free(mbrot->Pixels);
 
     return 0;
 }

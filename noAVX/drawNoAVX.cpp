@@ -15,6 +15,15 @@ int  drawAss      (Mandelbrot *mbrot)
     
     sf::Sprite  sprite(texture);                                                    // creating sprite that will display texture
 
+    sf::Font font;
+    font.loadFromFile("font.ttf");
+
+    sf::Text FPS("0", font, 20);
+
+    sf::Clock     clock;
+    double        fps          = 0;
+    std::string   str;
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -34,6 +43,14 @@ int  drawAss      (Mandelbrot *mbrot)
         window.draw(sprite);
         window.display();
 
+        fps          = 1. / (clock.getElapsedTime().asSeconds());
+        clock.restart();
+
+        str = std::to_string(fps);
+        
+        FPS.setString(str);
+        window.draw(FPS);
+        window.display();
     }
 
     return 0;
