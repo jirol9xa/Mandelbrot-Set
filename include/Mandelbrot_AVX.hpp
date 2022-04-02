@@ -17,8 +17,9 @@
         const int     n_max  = 256;
         const __m256d r_max  = _mm256_set1_pd (4.);
 
-        double dx    = 6. / width, dy = 4. / heigth;
         double scale = 1.;
+        double dx    = 6. / width  * scale, 
+               dy    = 4. / heigth * scale;
         double xC    = 0., yC = 0.;        // coordinates of center of picture
 
         uint32_t *Pixels = nullptr;

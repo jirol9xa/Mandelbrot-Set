@@ -1,7 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include <immintrin.h>
-#include <Mandelbrot_AVX.hpp>
+#include <Mandelbrot_AVX128.hpp>
 #include <string.h>
+#include "stdio.h"
 
 
 int  drawAss      (Mandelbrot *mbrot)
@@ -23,7 +24,7 @@ int  drawAss      (Mandelbrot *mbrot)
     sf::Text FPS("0", font, 20);
 
     sf::Clock     clock;
-    double        fps          = 0;
+    double        fps = 0;
     std::string   str;
 
     while (window.isOpen())
@@ -32,7 +33,6 @@ int  drawAss      (Mandelbrot *mbrot)
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)    window.close();
-
         }
 
         if (fillImage(mbrot))   window.close();
@@ -40,16 +40,16 @@ int  drawAss      (Mandelbrot *mbrot)
         mbrot->Pixels -= pix_amount;
 
         texture.update((const uint8_t *) (mbrot->Pixels));
-
+        
         window.clear();
         window.draw(sprite);
         window.display();
-
+        
         fps          = 1. / (clock.getElapsedTime().asSeconds());
         clock.restart();
 
         str = std::to_string(fps);
-        
+
         FPS.setString(str);
         window.draw(FPS);
         window.display();

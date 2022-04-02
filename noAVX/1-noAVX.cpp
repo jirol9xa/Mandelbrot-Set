@@ -56,15 +56,13 @@ int getColor(double x0, double y0, int n_max, double r_max)
     int n = 0;
 
     double x = x0, y = y0;
+
     for ( ; n < n_max; ++n)
     {
         double X = x * x, Y = y * y, XY = x * y;
 
-        //printf("X2 + Y2 = %lg\n", X + Y);
-
         if (X + Y >= r_max)
         {
-            //printf("Here n = %d\n", n);
             return n;
         }
 
@@ -91,7 +89,7 @@ int fillImage(Mandelbrot *mbrot)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
         (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) ? YC(mbrot) += 10. : YC(mbrot) += 0.2;
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && SCALE(mbrot) > 0.5)        
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))        
     {
         SCALE(mbrot) -= 0.01;
         DX(mbrot)    *= SCALE(mbrot); DY(mbrot) *= SCALE(mbrot);
@@ -102,10 +100,17 @@ int fillImage(Mandelbrot *mbrot)
         DX(mbrot)    *= SCALE(mbrot); DY(mbrot) *= SCALE(mbrot);
     }
 
-    for (int yi = 0; yi < HEIGTH(mbrot); ++yi, PIXELS(mbrot) += WIDTH(mbrot))
+    int    heigth = HEIGTH(mbrot);
+    int    width  = WIDTH(mbrot);
+    double Dx     = DX(mbrot);
+    double Dy     = DY(mbrot);
+    double Xc     = XC(mbrot);
+    double Yc     = YC(mbrot);
+
+    for (int yi = 0; yi < heigth; ++yi, PIXELS(mbrot) += width)
     {
-        double  x0 = (-1. * WIDTH(mbrot)               / 2) * DX(mbrot) + XC(mbrot) * (6. / mbrot->width);
-        double  y0 = ((double) yi - 1. * HEIGTH(mbrot) / 2) * DY(mbrot) + YC(mbrot) * (4. / mbrot->heigth);
+        double  x0 = (-1. * width               / 2) * Dx + Xc * (6. / width);
+        double  y0 = ((double) yi - 1. * heigth / 2) * Dy + Yc * (4. / heigth);
 
         fillString(mbrot, x0, y0);
     }
@@ -125,9 +130,8 @@ int fillString(Mandelbrot *mbrot, double x0, double y0)
 
     for (int xi = 0; xi < WIDTH(mbrot); ++xi, x0 += dx)
     {
-        //printf("one more pixel\n");
         int n = getColor(x0, y0, n_max, r_max);
-        Pixels[xi] = (sin(n)) * 256 + n + tan(n) * 0x00228322  + tan(n * n + log10(n + 1) * 512) + cos(pow(tan(n * n), 2)) + 0xFF000000;
+        Pixels[xi] = 0xFF000000 + sin(n) * (2 << 20) + pow(n, 2) * (2 << 11) + tan(n) * (2 << 15);
     }
 
     return 0;

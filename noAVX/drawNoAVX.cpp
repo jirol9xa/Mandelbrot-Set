@@ -13,7 +13,7 @@ int  drawAss      (Mandelbrot *mbrot)
     sf::Texture texture;
     texture.create(mbrot->width, mbrot->heigth);    // creating texture
     
-    sf::Sprite  sprite(texture);                                                    // creating sprite that will display texture
+    sf::Sprite  sprite(texture);                    // creating sprite that will display texture
 
     sf::Font font;
     font.loadFromFile("font.ttf");
@@ -51,6 +51,7 @@ int  drawAss      (Mandelbrot *mbrot)
         FPS.setString(str);
         window.draw(FPS);
         window.display();
+
     }
 
     return 0;

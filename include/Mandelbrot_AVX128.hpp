@@ -14,13 +14,13 @@
         const int width  = 1200;      // window
         const int heigth = 800;       //settings
 
-        const int n_max     = 256;
-        const double r_max  = 4.;
+        const int     n_max  = 256;
+        const __m128  r_max  = _mm_set1_ps (4.f);
 
-        double scale = 1.;
-        double dx    = 6. / width  * scale, 
-               dy    = 4. / heigth * scale;
-        double xC    = 0., yC = 0.;        // coordinates of center of picture
+        float scale = 1.f;
+        float dx    = 6. / width  * scale, 
+              dy    = 4. / heigth * scale;
+        float xC    = 0.f, yC = 0.f;        // coordinates of center of picture
 
         uint32_t *Pixels = nullptr;
     };
@@ -37,9 +37,7 @@
 
     int  mbrotCtor    (Mandelbrot *mbrot);
     int  mbrotDtor    (Mandelbrot *mbrot);
-    int  getGetColor  (Mandelbrot *mbrot, double x, double y);
     int  fillImage    (Mandelbrot *mbrot);
-    int  fillString   (Mandelbrot *mbrot, double x0, double y0);
     int  drawAss      (Mandelbrot *mbrot); 
 
 #endif
