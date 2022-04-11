@@ -43,4 +43,4 @@ For running AVX floats loop
 
 # Conclusion
 
-### Using AVX instructions on double gives a 1388% performance gain, using AVX on float by 82%. To, exclude the influence of the graphics library, tests were conducted without drawing (AVX float loops), which gave an increase of 1726%. It can be concluded that the contribution of the graphics library is quite significant (performance decline by 338%)
+### Using AVX instructions on double gives a 1288% performance gain, using AVX on float by 721%. To, exclude the influence of the graphics library, tests were conducted without drawing (AVX float loops), which gave an increase of 1626%. It can be concluded that the contribution of the graphics library is quite significant (performance decline by 338%)
