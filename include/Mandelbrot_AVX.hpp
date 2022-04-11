@@ -11,11 +11,11 @@
             quit_cmd      = 3
         };
 
-        const int width  = 1200;      // window
+        const int width  = 1200;      // window 
         const int heigth = 800;       //settings
 
         const int     n_max  = 256;
-        const __m256d r_max  = _mm256_set1_pd (4.);
+        const __m256 r_max  = _mm256_set1_ps (4.);
 
         double scale = 1.;
         double dx    = 6. / width  * scale, 

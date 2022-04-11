@@ -17,7 +17,7 @@
         const int n_max     = 256;
         const double r_max  = 4.;
 
-        double scale = 1.;
+        double scale = 1.; 
         double dx    = 6. / width  * scale, 
                dy    = 4. / heigth * scale;
         double xC    = 0., yC = 0.;        // coordinates of center of picture

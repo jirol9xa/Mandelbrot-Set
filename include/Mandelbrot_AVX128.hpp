@@ -18,7 +18,7 @@
         const __m128  r_max  = _mm_set1_ps (4.f);
 
         float scale = 1.f;
-        float dx    = 6. / width  * scale, 
+        float dx    = 6. / width  * scale,  
               dy    = 4. / heigth * scale;
         float xC    = 0.f, yC = 0.f;        // coordinates of center of picture
 

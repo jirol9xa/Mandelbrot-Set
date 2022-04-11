@@ -24,11 +24,7 @@ For running noAVX version
 
 For running AVX doubles
 
-    make AVX && ./avx
-
-For running AVX floats
-
-    make AVX128 && ./avx128
+    make AVXfor && ./avxfor
 
 For running AVX floats loop
 
@@ -37,15 +33,15 @@ For running AVX floats loop
 # Performance research
 
 ### My laptop has AMD ryzen 5 4500u installed. Therefore, all performance results are carried out on this processor. The measurement of the number of constructed frames was carried out for 5 seconds
-|    |noAVX|AVXdoubles|AVXfloats|AVX floats cycle| AVX float cycle without drawing in SFML|
+|    |noAVX|AVXdoubles|AVXfloats|AVX doubles cycle without drawing in SFML|
 |:--:|:---:|:--------:|:-------:|:--------------:| :--:|
-|scale = 1; Xc = 0; Yc = 0    | 25| 39  | 44  | 44 | 45  |
-|scale = 1,25; Xc= 0; Yc = 0  | 17| 26  | 29  | 30 | 30  |
-|scale = 2; Xc = -100; Yc = 0 | 7 | 11  | 13  | 13 | 13  |
-|scale = 3,3; Xc = 150; Yc = 0| 7 | 11  | 13  | 13 | 13  |
-|scale = 0,5; Xc = 0; Yc = 0  | 82| 116 | 126 | 133| 137 |
+|scale = 1; Xc = 0; Yc = 0    | 25 | 343 | 204 | 435  |
+|scale = 1,25; Xc= 0; Yc = 0  | 17 | 242 | 144 | 298  |
+|scale = 2; Xc = -100; Yc = 0 | 7  | 114 | 62  | 126  |
+|scale = 3,3; Xc = 150; Yc = 0| 7  | 115 | 62  | 127  |
+|scale = 0,5; Xc = 0; Yc = 0  | 82 | 717 | 553 | 1248 |
 
 
 # Conclusion
 
-### Using AVX instructions on double gives a 47% performance gain, using AVX on float by 63%, using the AVX float implementation through loops gives 69%. To exclude the influence of the graphics library, tests were conducted without drawing (AVX float loops), which gave an increase of 72%. It can be seen that the corrections for drawing are very small compared to the increase that the use of AVX instructions gives.
+### Using AVX instructions on double gives a 1388% performance gain, using AVX on float by 82%. To, exclude the influence of the graphics library, tests were conducted without drawing (AVX float loops), which gave an increase of 1726%. It can be concluded that the contribution of the graphics library is quite significant (performance decline by 338%)

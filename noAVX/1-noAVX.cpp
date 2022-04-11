@@ -131,7 +131,7 @@ int fillString(Mandelbrot *mbrot, double x0, double y0)
     for (int xi = 0; xi < WIDTH(mbrot); ++xi, x0 += dx)
     {
         int n = getColor(x0, y0, n_max, r_max);
-        Pixels[xi] = 0xFF000000 + sin(n) * (2 << 20) + pow(n, 2) * (2 << 11) + tan(n) * (2 << 15);
+        Pixels[xi] = 0xFF000000 + n;//sin(n) * (2 << 20) + pow(n, 2) * (2 << 11) + tan(n) * (2 << 15);
     }
 
     return 0;
