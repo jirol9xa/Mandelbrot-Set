@@ -57,16 +57,9 @@ int  drawAss      (Mandelbrot *mbrot)
         FPS.setString(str);
         window.draw(FPS);
         window.display();
-
-        time = clock2.getElapsedTime().asSeconds();
-        fps2++;
-
-        if (time >= 5)  break;
     }
 
     window.~RenderWindow();
-
-    printf("fps = %d\n", fps2);
 
     return 0;
 }
