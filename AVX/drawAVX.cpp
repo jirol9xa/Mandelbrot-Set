@@ -30,49 +30,42 @@ int  drawAss      (Mandelbrot *mbrot)
     double    time = 0;       
     int       fps2 = 0;
 
-    //while (window.isOpen())
-    //{
-    //    sf::Event event;
-    //    while (window.pollEvent(event))
-    //    {
-    //        if (event.type == sf::Event::Closed)    window.close();
-//
-    //    }
-//
-    //    if (fillImage(mbrot))   window.close();
-//
-    //    mbrot->Pixels -= pix_amount;
-//
-    //    texture.update((const uint8_t *) (mbrot->Pixels));
-//
-    //    window.clear();
-    //    window.draw(sprite);
-    //    window.display();
-//
-    //    fps          = 1. / (clock.getElapsedTime().asSeconds());
-    //    clock.restart();
-//
-    //    str = std::to_string(fps);
-    //    
-    //    FPS.setString(str);
-    //    window.draw(FPS);
-    //    window.display();
-//
-    //    time = clock2.getElapsedTime().asSeconds();
-    //    fps2++;
-//
-    //    if (time >= 5)  break;
-    //}
-//
-    //window.~RenderWindow();
-    for(;;)
+    while (window.isOpen())
     {
-        fillImage(mbrot);
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)    window.close();
+
+        }
+
+        if (fillImage(mbrot))   window.close();
+
         mbrot->Pixels -= pix_amount;
+
+        texture.update((const uint8_t *) (mbrot->Pixels));
+
+        window.clear();
+        window.draw(sprite);
+        window.display();
+
+        fps          = 1. / (clock.getElapsedTime().asSeconds());
+        clock.restart();
+
+        str = std::to_string(fps);
+        
+        FPS.setString(str);
+        window.draw(FPS);
+        window.display();
+
         time = clock2.getElapsedTime().asSeconds();
         fps2++;
+
         if (time >= 5)  break;
     }
+
+    window.~RenderWindow();
+
     printf("fps = %d\n", fps2);
 
     return 0;

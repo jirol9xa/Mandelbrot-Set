@@ -6,7 +6,6 @@
 1. Simple implementation using functions
 2. Implementation using AVX instructions based on double values
 3. Implementation on AVX with float values
-4. Implementation on AVX with float values made through loops
 
 <br/>
 
