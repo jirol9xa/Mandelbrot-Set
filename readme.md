@@ -34,7 +34,7 @@ For running AVX floats loop
 
 ### My laptop has AMD ryzen 5 4500u installed. Therefore, all performance results are carried out on this processor. The measurement of the number of constructed frames was carried out for 5 seconds
 |    |noAVX|AVXdoubles|AVXfloats|AVX doubles cycle without drawing in SFML|
-|:--:|:---:|:--------:|:-------:|:--------------:| :--:|
+|:--:|:---:|:--------:|:-------:|:--------------:|
 |scale = 1; Xc = 0; Yc = 0    | 25 | 343 | 204 | 435  |
 |scale = 1,25; Xc= 0; Yc = 0  | 17 | 242 | 144 | 298  |
 |scale = 2; Xc = -100; Yc = 0 | 7  | 114 | 62  | 126  |
