@@ -107,12 +107,17 @@ int fillImage(Mandelbrot *mbrot)
     double Xc     = XC(mbrot);
     double Yc     = YC(mbrot);
 
-    for (int yi = 0; yi < heigth; ++yi, PIXELS(mbrot) += width)
+    for (int i = 0; i < 1000; ++i)
     {
-        double  x0 = (-1. * width               / 2) * Dx + Xc * (6. / width);
-        double  y0 = ((double) yi - 1. * heigth / 2) * Dy + Yc * (4. / heigth);
+        for (int yi = 0; yi < heigth; ++yi, PIXELS(mbrot) += width)
+        {
+            double  x0 = (-1. * width               / 2) * Dx + Xc * (6. / width);
+            double  y0 = ((double) yi - 1. * heigth / 2) * Dy + Yc * (4. / heigth);
 
-        fillString(mbrot, x0, y0);
+            fillString(mbrot, x0, y0);
+        }
+
+        PIXELS(mbrot) -= width * heigth;
     }
 
     return 0;

@@ -18,11 +18,11 @@ clear:
 
 
 1-main.o: 		noAVX/1-main.cpp
-	$(CC) 	-c 	noAVX/1-main.cpp   		   	 $(I_FLAG)
+	$(CC) 	-c noAVX/1-main.cpp   		   	 $(I_FLAG)
 1-noAVX.o:		noAVX/1-noAVX.cpp
-	$(CC)	-c	noAVX/1-noAVX.cpp  			 $(I_FLAG)
+	$(CC)	-c noAVX/1-noAVX.cpp  			 $(I_FLAG)
 drawNoAVX.o:	noAVX/drawNoAVX.cpp
-	$(CC)	-c 	noAVX/drawNoAVX.cpp			 $(I_FLAG)
+	$(CC)	-c noAVX/drawNoAVX.cpp			 $(I_FLAG)
 
 1-mainAVX.o:	AVX/1-mainAVX.cpp
 	$(CC)	$(C_FLAGS)	AVX/1-mainAVX.cpp 	 $(I_FLAG) 

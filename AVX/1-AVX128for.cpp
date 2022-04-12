@@ -86,55 +86,60 @@ int fillImage(Mandelbrot *mbrot)
     float Xc     = XC(mbrot);
     float Yc     = YC(mbrot);
 
-    for (int yi = 0; yi < heigth; ++yi, PIXELS(mbrot) += width)
+    for (int i = 0; i < 1000; ++i)
     {
-        float  x0 = (-1.f * WIDTH(mbrot)              / 2) * Dx + Xc * (6.f / width);
-        float  y0 = ((float) yi - 1.f * HEIGTH(mbrot) / 2) * Dy + Yc * (4.f / heigth);
-
-        __m128   x00     = _mm_add_ps(_mm_set1_ps(x0), _mm_mul_ps(_3210, dx)), 
-                 y00     = _mm_set1_ps(y0); 
-        __m128   _4      = _mm_set1_ps(4.f);
-        __m128   _255    = _mm_set1_ps(255.f);
-
-        for (int xi = 0; xi < width; xi += 4, x00 = _mm_add_ps(x00, _mm_mul_ps(dx, _4)))
+        for (int yi = 0; yi < heigth; ++yi, PIXELS(mbrot) += width)
         {
-            int n = 0;
+            float  x0 = (-1.f * WIDTH(mbrot)              / 2) * Dx + Xc * (6.f / width);
+            float  y0 = ((float) yi - 1.f * HEIGTH(mbrot) / 2) * Dy + Yc * (4.f / heigth);
 
-            __m128 x = x00, y = y00;
-            __m128i N = _mm_setzero_si128();
+            __m128   x00     = _mm_add_ps(_mm_set1_ps(x0), _mm_mul_ps(_3210, dx)), 
+                     y00     = _mm_set1_ps(y0); 
+            __m128   _4      = _mm_set1_ps(4.f);
+            __m128   _255    = _mm_set1_ps(255.f);
 
-            for ( ; n < n_max; ++n)
+            for (int xi = 0; xi < width; xi += 4, x00 = _mm_add_ps(x00, _mm_mul_ps(dx, _4)))
             {
-                __m128 X = _mm_mul_ps(x, x), Y = _mm_mul_ps(y, y), XY = _mm_mul_ps(x, y);
+                int n = 0;
 
-                //printf("X2 + Y2 = %lg\n", X + Y);
+                __m128 x = x00, y = y00;
+                __m128i N = _mm_setzero_si128();
 
-                __m128 cmp = _mm_cmple_ps(_mm_add_ps(X, Y), r_max);
-                int mask    = _mm_movemask_ps(cmp);
+                for ( ; n < n_max; ++n)
+                {
+                    __m128 X = _mm_mul_ps(x, x), Y = _mm_mul_ps(y, y), XY = _mm_mul_ps(x, y);
 
-                if (!mask)  break;
+                    //printf("X2 + Y2 = %lg\n", X + Y);
 
-                N = _mm_sub_epi32   (N, _mm_castps_si128(cmp));
+                    __m128 cmp = _mm_cmple_ps(_mm_add_ps(X, Y), r_max);
+                    int mask    = _mm_movemask_ps(cmp);
 
-                x = _mm_add_ps(_mm_sub_ps(X, Y),   x00);
-                y = _mm_add_ps(_mm_add_ps(XY, XY), y00);
+                    if (!mask)  break;
+
+                    N = _mm_sub_epi32   (N, _mm_castps_si128(cmp));
+
+                    x = _mm_add_ps(_mm_sub_ps(X, Y),   x00);
+                    y = _mm_add_ps(_mm_add_ps(XY, XY), y00);
+                }
+
+                uint32_t *pn = (uint32_t *) &N;
+                uint32_t *Pixels = PIXELS(mbrot);
+
+                int pix = pn[0]; 
+                Pixels[xi + 0]  = 0xFF000000 + pix;//+ sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
+
+                pix = pn[1]; 
+                Pixels[xi + 1]  = 0xFF000000 + pix;//sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
+
+                pix = pn[2]; 
+                Pixels[xi + 2]  = 0xFF000000 + pix;//sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
+
+                pix = pn[3]; 
+                Pixels[xi + 3]  = 0xFF000000 + pix;//sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
             }
-
-            uint32_t *pn = (uint32_t *) &N;
-            uint32_t *Pixels = PIXELS(mbrot);
-
-            int pix = pn[0]; 
-            Pixels[xi + 0]  = 0xFF000000 + pix;//+ sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
-            
-            pix = pn[1]; 
-            Pixels[xi + 1]  = 0xFF000000 + pix;//sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
-            
-            pix = pn[2]; 
-            Pixels[xi + 2]  = 0xFF000000 + pix;//sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
-            
-            pix = pn[3]; 
-            Pixels[xi + 3]  = 0xFF000000 + pix;//sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
         }
+
+        mbrot->Pixels -= width * heigth;
     }
 
     return 0;

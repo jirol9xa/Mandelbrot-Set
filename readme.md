@@ -31,16 +31,12 @@ For running AVX floats loop
 
 # Performance research
 
-### My laptop has AMD ryzen 5 4500u installed. Therefore, all performance results are carried out on this processor. The measurement of the number of constructed frames was carried out for 5 seconds
-|    |noAVX|AVXdoubles|AVXfloats|AVX doubles cycle without drawing in SFML|
-|:--:|:---:|:--------:|:-------:|:--------------:|
-|scale = 1; Xc = 0; Yc = 0    | 25 | 343 | 204 | 435  |
-|scale = 1,25; Xc= 0; Yc = 0  | 17 | 242 | 144 | 298  |
-|scale = 2; Xc = -100; Yc = 0 | 7  | 114 | 62  | 126  |
-|scale = 3,3; Xc = 150; Yc = 0| 7  | 115 | 62  | 127  |
-|scale = 0,5; Xc = 0; Yc = 0  | 82 | 717 | 553 | 1248 |
+### My laptop has AMD ryzen 5 4500u installed. Here are performance tests when rendering each pixel 1000 times to avoid the error introduced by the graphics library. The time is measured by rendering 3 frames for each version. Such a large number of constructions were chosen in order to reduce the error introduced by the use of the graphics library by less than 5%.
+|noAVX   |noAVX -O3 |AVXdoubles -O3|AVXfloats -O3|AVX doubles cycle without drawing in SFML -O3|
+|:------:|:--------:|:------------:|:-----------:|:-------------------------------------------:|
+| 361.86 | 142.961  | 23.2755      | 39.6995     | 22.9232                                     |
 
 
 # Conclusion
 
-### Using AVX instructions on double gives a 1288% performance gain, using AVX on float by 721%. To, exclude the influence of the graphics library, tests were conducted without drawing (AVX float loops), which gave an increase of 1626%. It can be concluded that the contribution of the graphics library is quite significant (performance decline by 338%)
+### Using AVX instructions on double speeds up the program 6 times (compared to the version without AVX, but with -O3), using float - 3.6 times. In turn, just compiling with the optimization flag -O3 already speeds up the execution process by 2.5 times. Due to the large number of constructions of one frame, the error introduced by the graphics library is 1.5%.

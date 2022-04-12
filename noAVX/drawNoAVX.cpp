@@ -24,6 +24,10 @@ int  drawAss      (Mandelbrot *mbrot)
     double        fps          = 0;
     std::string   str;
 
+    sf::Clock clock2;
+    double    time = 0;       
+    int       fps2 = 0;
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -35,7 +39,7 @@ int  drawAss      (Mandelbrot *mbrot)
 
         if (fillImage(mbrot))   window.close();
 
-        mbrot->Pixels -= pix_amount;
+        //mbrot->Pixels -= pix_amount;
 
         texture.update((const uint8_t *) (mbrot->Pixels));
 
@@ -51,7 +55,13 @@ int  drawAss      (Mandelbrot *mbrot)
         FPS.setString(str);
         window.draw(FPS);
         window.display();
+        
+        time = clock2.getElapsedTime().asSeconds();
+        fps2++;
+        if (fps2 >= 3)  break;
     }
+
+    printf("%lg\n", time);
     
     return 0;
 }
