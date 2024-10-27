@@ -8,8 +8,6 @@ int  drawAss(Mandelbrot *mbrot)
 {
     PIXELS_CHECK(mbrot);
 
-    int pix_amount = mbrot->heigth * mbrot->width;
-
     sf::RenderWindow window(sf::VideoMode(mbrot->width, mbrot->heigth), "BlackAss");
     
     sf::Texture texture;

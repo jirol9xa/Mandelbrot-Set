@@ -134,6 +134,8 @@ int fillImage(Mandelbrot *mbrot)
         fillString(mbrot, x0, y0);
     }
 
+    PIXELS(mbrot) -= width * heigth;
+
     return 0;
 }
 
@@ -162,7 +164,7 @@ static int fillString(Mandelbrot *mbrot, float x0, float y0)
         for (int i = 0; i < 4; ++i)
         {
             int pix = pn[i]; 
-            Pixels[xi + i]  = 0xFF000000 + sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
+            Pixels[xi + i]  = 0xFF000000 + sin(pix) * (2 << 12) + pow(pix, 2) * (2 << 5) + tan(pix) * (2 << 10);
         }
     }
 
