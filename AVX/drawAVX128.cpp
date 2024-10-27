@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <immintrin.h>
 #include <Mandelbrot_AVX128.hpp>
 #include <string.h>
 #include "stdio.h"
@@ -27,9 +26,8 @@ int  drawAss      (Mandelbrot *mbrot)
     double        fps = 0;
     std::string   str;
 
-    sf::Clock clock2;
-    double    time = 0;       
-    int       fps2 = 0;
+    [[maybe_unused]] double    time = 0;       
+    [[maybe_unused]] int       fps2 = 0;
 
     while (window.isOpen())
     {
@@ -52,16 +50,10 @@ int  drawAss      (Mandelbrot *mbrot)
 
         str = std::to_string(fps);
 
-        FPS.setString(str);
-        window.draw(FPS);
-        window.display();
-
-        time = clock2.getElapsedTime().asSeconds();
-        fps2++;
-        if (fps2 >= 3)  break;
+        // FPS.setString(str);
+        // window.draw(FPS);
+        // window.display();
     }
-
-    printf("%lg\n", time);
 
     return 0;
 }

@@ -1,0 +1,5 @@
+.cache
+compile_*
+without*
+avx128
+*.o

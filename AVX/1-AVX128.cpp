@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include <immintrin.h>
+#include <arm_neon.h>
 #include <Mandelbrot_AVX128.hpp>
 #include "stdio.h"
 #include <cmath>
@@ -22,7 +22,7 @@
 #define PRINT_LINE          printf("[%s:%d]\n", __func__, __LINE__)  
 
 
-static __m128i getColor  (float x0, float y0, __m128i n_max, __m128 r_max);
+// static __m128i getColor  (float x0, float y0, __m128i n_max, __m128 r_max);
 static int     fillString(Mandelbrot *mbrot, float x0, float y0);
 
 
@@ -57,30 +57,30 @@ int mbrotDtor(Mandelbrot *mbrot)
 }
 
 
-static __m128i getColor(__m128 x0, __m128 y0, const int n_max, __m128 r_max)
-{
-    int n = 0;
+// static __m128i getColor(__m128 x0, __m128 y0, const int n_max, __m128 r_max)
+// {
+//     int n = 0;
 
-    __m128 x = x0, y = y0;
-    __m128i N = _mm_setzero_si128();
+//     __m128 x = x0, y = y0;
+//     __m128i N = _mm_setzero_si128();
 
-    for ( ; n < n_max; ++n)
-    {
-        __m128 X = _mm_mul_ps(x, x), Y = _mm_mul_ps(y, y), XY = _mm_mul_ps(x, y);
+//     for ( ; n < n_max; ++n)
+//     {
+//         __m128 X = _mm_mul_ps(x, x), Y = _mm_mul_ps(y, y), XY = _mm_mul_ps(x, y);
 
-        __m128 cmp = _mm_cmple_ps(_mm_add_ps(X, Y), r_max);
-        int mask    = _mm_movemask_ps(cmp);
+//         __m128 cmp = _mm_cmple_ps(_mm_add_ps(X, Y), r_max);
+//         int mask    = _mm_movemask_ps(cmp);
         
-        if (!mask)  return N;
+//         if (!mask)  return N;
 
-        N = _mm_sub_epi32   (N, _mm_castps_si128(cmp));
+//         N = _mm_sub_epi32   (N, _mm_castps_si128(cmp));
 
-        x = _mm_add_ps(_mm_sub_ps(X, Y),   x0);
-        y = _mm_add_ps(_mm_add_ps(XY, XY), y0);
-    }
+//         x = _mm_add_ps(_mm_sub_ps(X, Y),   x0);
+//         y = _mm_add_ps(_mm_add_ps(XY, XY), y0);
+//     }
 
-    return N;
-}
+//     return N;
+// }
 
 
 int fillImage(Mandelbrot *mbrot)
@@ -132,29 +132,29 @@ static int fillString(Mandelbrot *mbrot, float x0, float y0)
 {
     PIXELS_CHECK(mbrot);
 
-    int       n_max  = N_MAX(mbrot);
-    __m128    r_max  = R_MAX(mbrot);
-    __m128    dx     = _mm_set1_ps(DX(mbrot));
-    __m128   _3210   = _mm_set_ps(3.f, 2.f, 1.f, 0.f);
-    uint32_t *Pixels = PIXELS(mbrot);
+    // int       n_max  = N_MAX(mbrot);
+    // __m128    r_max  = R_MAX(mbrot);
+    // __m128    dx     = _mm_set1_ps(DX(mbrot));
+    // __m128   _3210   = _mm_set_ps(3.f, 2.f, 1.f, 0.f);
+    // uint32_t *Pixels = PIXELS(mbrot);
     
-    __m128   x00     = _mm_add_ps(_mm_set1_ps(x0), _mm_mul_ps(_3210, dx)), 
-             y00     = _mm_set1_ps(y0); 
-    __m128   _4      = _mm_set1_ps(4.f);
-    __m128   _255    = _mm_set1_ps(255.f);
+    // __m128   x00     = _mm_add_ps(_mm_set1_ps(x0), _mm_mul_ps(_3210, dx)), 
+    //          y00     = _mm_set1_ps(y0); 
+    // __m128   _4      = _mm_set1_ps(4.f);
+    // __m128   _255    = _mm_set1_ps(255.f);
 
-    for (int xi = 0; xi < WIDTH(mbrot); xi += 4, x00 = _mm_add_ps(x00, _mm_mul_ps(dx, _4)))
-    {
-        __m128i n = getColor(x00, y00, n_max, r_max);
+    // for (int xi = 0; xi < WIDTH(mbrot); xi += 4, x00 = _mm_add_ps(x00, _mm_mul_ps(dx, _4)))
+    // {
+    //     __m128i n = getColor(x00, y00, n_max, r_max);
         
-        uint32_t *pn = (uint32_t *) &n;
+    //     uint32_t *pn = (uint32_t *) &n;
         
-        for (int i = 0; i < 4; ++i)
-        {
-            int pix = pn[i]; 
-            Pixels[xi + i]  = 0xFF000000 + sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
-        }
-    }
+    //     for (int i = 0; i < 4; ++i)
+    //     {
+    //         int pix = pn[i]; 
+    //         Pixels[xi + i]  = 0xFF000000 + sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
+    //     }
+    // }
 
     return 0;
 }

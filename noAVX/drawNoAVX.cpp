@@ -25,8 +25,8 @@ int  drawAss      (Mandelbrot *mbrot)
     std::string   str;
 
     sf::Clock clock2;
-    double    time = 0;       
-    int       fps2 = 0;
+    [[maybe_unused]] double    time = 0;       
+    [[maybe_unused]] int       fps2 = 0;
 
     while (window.isOpen())
     {
@@ -52,16 +52,12 @@ int  drawAss      (Mandelbrot *mbrot)
 
         str = std::to_string(fps);
         
-        FPS.setString(str);
-        window.draw(FPS);
-        window.display();
+        // FPS.setString(str);
+        // window.draw(FPS);
+        // window.display();
         
         time = clock2.getElapsedTime().asSeconds();
-        fps2++;
-        if (fps2 >= 3)  break;
     }
-
-    printf("%lg\n", time);
     
     return 0;
 }

@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <immintrin.h>
 #include <Mandelbrot_AVX128.hpp>
 
 

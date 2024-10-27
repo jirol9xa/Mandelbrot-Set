@@ -107,18 +107,15 @@ int fillImage(Mandelbrot *mbrot)
     double Xc     = XC(mbrot);
     double Yc     = YC(mbrot);
 
-    for (int i = 0; i < 1000; ++i)
+    for (int yi = 0; yi < heigth; ++yi, PIXELS(mbrot) += width)
     {
-        for (int yi = 0; yi < heigth; ++yi, PIXELS(mbrot) += width)
-        {
-            double  x0 = (-1. * width               / 2) * Dx + Xc * (6. / width);
-            double  y0 = ((double) yi - 1. * heigth / 2) * Dy + Yc * (4. / heigth);
+        double  x0 = (-1. * width               / 2) * Dx + Xc * (6. / width);
+        double  y0 = ((double) yi - 1. * heigth / 2) * Dy + Yc * (4. / heigth);
 
-            fillString(mbrot, x0, y0);
-        }
-
-        PIXELS(mbrot) -= width * heigth;
+        fillString(mbrot, x0, y0);
     }
+
+    PIXELS(mbrot) -= width * heigth;
 
     return 0;
 }
@@ -136,7 +133,7 @@ int fillString(Mandelbrot *mbrot, double x0, double y0)
     for (int xi = 0; xi < WIDTH(mbrot); ++xi, x0 += dx)
     {
         int n = getColor(x0, y0, n_max, r_max);
-        Pixels[xi] = 0xFF000000 + n;//sin(n) * (2 << 20) + pow(n, 2) * (2 << 11) + tan(n) * (2 << 15);
+        Pixels[xi] = 0xFF000000 + sin(n) * (2 << 14) + pow(n, 2) * (2 << 4) + tan(n) * (2 << 15);
     }
 
     return 0;
