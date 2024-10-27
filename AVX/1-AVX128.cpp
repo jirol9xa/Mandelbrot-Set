@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <iostream>
 
 
 #define PIXELS(mbrot)       mbrot->Pixels
@@ -24,8 +25,7 @@
 #define PRINT_LINE          printf("[%s:%d]\n", __func__, __LINE__)  
 
 
-// static __m128i getColor  (float x0, float y0, __m128i n_max, __m128 r_max);
-static int     fillString(Mandelbrot *mbrot, float x0, float y0);
+static int fillString(Mandelbrot *mbrot, float x0, float y0);
 
 
 int  mbrotCtor(Mandelbrot *mbrot)
@@ -59,21 +59,18 @@ int mbrotDtor(Mandelbrot *mbrot)
 }
 
 
-static int32x4_t getColor(float32x4_t x0, float32x4_t y0, const int n_max, float32x4_t r_max)
+static uint32x4_t getColor(float32x4_t x0, float32x4_t y0, const int n_max, float32x4_t r_max)
 {
-    int n = 0;
-
     float32x4_t x = x0, y = y0;
-    int32x4_t N = vdupq_n_s32(0);
+    uint32x4_t N = {0, 0, 0, 0};
 
-    for ( ; n < n_max; ++n)
+    for (int n = 0; n < n_max; ++n)
     {
-        float32x4_t X  = vmulq_f32(x, x),
-                    Y  = vmulq_f32(y, y),
-                    XY = vmulq_f32(x, y);
+        float32x4_t X  = x * x,
+                    Y  = y * y,
+                    XY = x * y;
 
-        // compare less equal
-        uint32x4_t cmp = vcltq_f32(vaddq_f32(X, Y), r_max);
+        uint32x4_t cmp = (X + Y < r_max);
         if (
             !vgetq_lane_u32(cmp, 0) && !vgetq_lane_u32(cmp, 1) &&
             !vgetq_lane_u32(cmp, 2) && !vgetq_lane_u32(cmp, 3)
@@ -81,15 +78,44 @@ static int32x4_t getColor(float32x4_t x0, float32x4_t y0, const int n_max, float
             return N;
         }
 
-        // Mb need explicitly convert cmp to signed integer type?
-        N = vsubq_s32(N, cmp);
+        N += cmp & uint32x4_t{1, 1, 1, 1};
 
-        x = vaddq_f32(vsubq_f32(X, Y),   x0);
-        y = vaddq_f32(vaddq_f32(XY, XY), y0);
+        x = X - Y + x0;
+        y = XY + XY + y0;
     }
 
-    return N;
+    return {0, 0, 0, 0};
 }
+
+// static uint32x4_t getColor(float32x4_t x0, float32x4_t y0, const int n_max, float32x4_t r_max)
+// {
+//     float32x4_t x = x0, y = y0;
+//     uint32x4_t N = vdupq_n_u32(0);
+
+//     for (int n = 0; n < n_max; ++n)
+//     {
+//         float32x4_t X  = vmulq_f32(x, x),
+//                     Y  = vmulq_f32(y, y),
+//                     XY = vmulq_f32(x, y);
+
+//         // compare less
+//         uint32x4_t cmp = vcltq_f32(vaddq_f32(X, Y), r_max);
+//         if (
+//             !vgetq_lane_u32(cmp, 0) && !vgetq_lane_u32(cmp, 1) &&
+//             !vgetq_lane_u32(cmp, 2) && !vgetq_lane_u32(cmp, 3)
+//         ) { 
+//             return N;
+//         }
+
+//         // Mb need explicitly convert cmp to signed integer type?
+//         N = vsubq_u32(N, cmp);
+
+//         x = vaddq_f32(vsubq_f32(X, Y),   x0);
+//         y = vaddq_f32(vaddq_f32(XY, XY), y0);
+//     }
+
+//     return N;
+// }
 
 
 int fillImage(Mandelbrot *mbrot)
@@ -144,29 +170,67 @@ static int fillString(Mandelbrot *mbrot, float x0, float y0)
 {
     PIXELS_CHECK(mbrot);
 
-    int n_max  = N_MAX(mbrot);
-    float32x4_t r_max = vdupq_n_f32(R_MAX(mbrot));
-    float32x4_t dx    = vdupq_n_f32(DX(mbrot));
-    float32x4_t _3210 = {3.f, 2.f, 1.f, 0.f};
+    float32x4_t r_max = {R_MAX(mbrot), R_MAX(mbrot), R_MAX(mbrot), R_MAX(mbrot)};
+    float32x4_t dx    = {DX(mbrot), DX(mbrot), DX(mbrot), DX(mbrot)};
     uint32_t *Pixels = PIXELS(mbrot);
     
-    float32x4_t x00     = vaddq_f32(vdupq_n_f32(x0), vmulq_f32(_3210, dx)), 
-                y00     = vdupq_n_f32(y0); 
-    float32x4_t _4 = vdupq_n_f32(4.f);
-    [[maybe_unused]] float32x4_t _255 = vdupq_n_f32(255.f);
+    float32x4_t x00     = float32x4_t{x0, x0, x0, x0} + float32x4_t{3.f, 2.f, 1.f, 0.f} * dx, 
+                y00     = {y0, y0, y0, y0};
 
-    for (int xi = 0; xi < WIDTH(mbrot); xi += 4, x00 = vaddq_f32(x00, vmulq_f32(dx, _4)))
+    for (int xi = 0; xi < WIDTH(mbrot); xi += 4, x00 += dx * 4)
     {
-        int32x4_t n = getColor(x00, y00, n_max, r_max);
+        uint32x4_t pixelx4 = getColor(x00, y00, N_MAX(mbrot), r_max);
         
-        uint32_t *pn = (uint32_t *) &n;
-        
-        for (int i = 0; i < 4; ++i)
-        {
-            int pix = pn[i]; 
-            Pixels[xi + i]  = 0xFF000000 + sin(pix) * (2 << 12) + pow(pix, 2) * (2 << 5) + tan(pix) * (2 << 10);
-        }
+#define SET_PIXEL(pix_num)  do                                                                                      \
+{                                                                                                                   \
+    unsigned int pix = vgetq_lane_u32(pixelx4, pix_num);                                                            \
+    Pixels[xi + pix_num]  = 0xFF000000 + sin(pix) * (2 << 14) + pow(pix, 2) * (2 << 4) + tan(pix) * (2 << 15);      \
+} while (0)
+
+        SET_PIXEL(0);
+        SET_PIXEL(1);
+        SET_PIXEL(2);
+        SET_PIXEL(3);
+
+#undef SET_PIXEL
     }
 
     return 0;
 }
+
+// static int fillString(Mandelbrot *mbrot, float x0, float y0)
+// {
+//     PIXELS_CHECK(mbrot);
+
+//     int n_max  = N_MAX(mbrot);
+//     float32x4_t r_max = vdupq_n_f32(R_MAX(mbrot));
+//     float32x4_t dx    = vdupq_n_f32(DX(mbrot));
+//     float32x4_t _3210 = {3.f, 2.f, 1.f, 0.f};
+//     uint32_t *Pixels = PIXELS(mbrot);
+    
+//     float32x4_t x00     = vaddq_f32(vdupq_n_f32(x0), vmulq_f32(_3210, dx)), 
+//                 y00     = vdupq_n_f32(y0); 
+//     float32x4_t _4 = vdupq_n_f32(4.f);
+//     [[maybe_unused]] float32x4_t _255 = vdupq_n_f32(255.f);
+
+//     for (int xi = 0; xi < WIDTH(mbrot); xi += 4, x00 = vaddq_f32(x00, vmulq_f32(dx, _4)))
+//     {
+//         uint32x4_t pixelx4 = getColor(x00, y00, n_max, r_max);
+        
+// #define SET_PIXEL(i)  do                                                                                        \
+// {                                                                                                               \
+//     unsigned int pix = vgetq_lane_u32(pixelx4, i);                                                              \
+//     Pixels[xi + i]  = 0xFF000000 + sin(pix) * (2 << 12) + pow(pix, 2) * (2 << 5) + tan(pix) * (2 << 10);        \
+// } while (0)
+
+//         SET_PIXEL(0);
+//         SET_PIXEL(1);
+//         SET_PIXEL(2);
+//         SET_PIXEL(3);
+
+// #undef SET_PIXEL
+//     }
+
+//     return 0;
+// }
+
