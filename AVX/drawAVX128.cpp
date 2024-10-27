@@ -4,7 +4,7 @@
 #include "stdio.h"
 
 
-int  drawAss      (Mandelbrot *mbrot)
+int  drawAss(Mandelbrot *mbrot)
 {
     PIXELS_CHECK(mbrot);
 

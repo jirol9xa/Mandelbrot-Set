@@ -1,6 +1,8 @@
 #ifndef MANDELBROT_HPP
     #define MANDELBROT_HPP
 
+    #include <arm_neon.h>
+
     struct Mandelbrot
     {
 
@@ -14,8 +16,8 @@
         const int width  = 1200;      // window
         const int heigth = 800;       //settings
 
-        const int     n_max  = 256;
-        const __m128  r_max  = _mm_set1_ps (4.f);
+        const int n_max  = 256;
+        const float r_max  = 4.f;
 
         float scale = 1.f;
         float dx    = 6. / width  * scale,  

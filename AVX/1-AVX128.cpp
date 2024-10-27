@@ -1,8 +1,10 @@
 #include <SFML/Graphics.hpp>
-#include <arm_neon.h>
 #include <Mandelbrot_AVX128.hpp>
 #include "stdio.h"
+#include <arm_neon.h>
+#include <cassert>
 #include <cmath>
+#include <cstdlib>
 
 
 #define PIXELS(mbrot)       mbrot->Pixels
@@ -35,7 +37,7 @@ int  mbrotCtor(Mandelbrot *mbrot)
         return -1;
     }
 
-    mbrot->Pixels    = (uint32_t *) calloc(WIDTH(mbrot) * HEIGTH(mbrot) , sizeof(uint32_t));
+    mbrot->Pixels    = (uint32_t *) std::aligned_alloc(128 / 8, WIDTH(mbrot) * HEIGTH(mbrot) * sizeof(uint32_t));
     mbrot->Pixels    = mbrot->Pixels;
     
     return 0;
@@ -57,34 +59,42 @@ int mbrotDtor(Mandelbrot *mbrot)
 }
 
 
-// static __m128i getColor(__m128 x0, __m128 y0, const int n_max, __m128 r_max)
-// {
-//     int n = 0;
+static int32x4_t getColor(float32x4_t x0, float32x4_t y0, const int n_max, float32x4_t r_max)
+{
+    int n = 0;
 
-//     __m128 x = x0, y = y0;
-//     __m128i N = _mm_setzero_si128();
+    float32x4_t x = x0, y = y0;
+    int32x4_t N = vdupq_n_s32(0);
 
-//     for ( ; n < n_max; ++n)
-//     {
-//         __m128 X = _mm_mul_ps(x, x), Y = _mm_mul_ps(y, y), XY = _mm_mul_ps(x, y);
+    for ( ; n < n_max; ++n)
+    {
+        float32x4_t X  = vmulq_f32(x, x),
+                    Y  = vmulq_f32(y, y),
+                    XY = vmulq_f32(x, y);
 
-//         __m128 cmp = _mm_cmple_ps(_mm_add_ps(X, Y), r_max);
-//         int mask    = _mm_movemask_ps(cmp);
-        
-//         if (!mask)  return N;
+        // compare less equal
+        uint32x4_t cmp = vcltq_f32(vaddq_f32(X, Y), r_max);
+        if (
+            !vgetq_lane_u32(cmp, 0) && !vgetq_lane_u32(cmp, 1) &&
+            !vgetq_lane_u32(cmp, 2) && !vgetq_lane_u32(cmp, 3)
+        ) { 
+            return N;
+        }
 
-//         N = _mm_sub_epi32   (N, _mm_castps_si128(cmp));
+        // Mb need explicitly convert cmp to signed integer type?
+        N = vsubq_s32(N, cmp);
 
-//         x = _mm_add_ps(_mm_sub_ps(X, Y),   x0);
-//         y = _mm_add_ps(_mm_add_ps(XY, XY), y0);
-//     }
+        x = vaddq_f32(vsubq_f32(X, Y),   x0);
+        y = vaddq_f32(vaddq_f32(XY, XY), y0);
+    }
 
-//     return N;
-// }
+    return N;
+}
 
 
 int fillImage(Mandelbrot *mbrot)
 {
+    assert(mbrot);
     PIXELS_CHECK(mbrot);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))   return QUIT_CDM(mbrot);
@@ -132,29 +142,29 @@ static int fillString(Mandelbrot *mbrot, float x0, float y0)
 {
     PIXELS_CHECK(mbrot);
 
-    // int       n_max  = N_MAX(mbrot);
-    // __m128    r_max  = R_MAX(mbrot);
-    // __m128    dx     = _mm_set1_ps(DX(mbrot));
-    // __m128   _3210   = _mm_set_ps(3.f, 2.f, 1.f, 0.f);
-    // uint32_t *Pixels = PIXELS(mbrot);
+    int n_max  = N_MAX(mbrot);
+    float32x4_t r_max = vdupq_n_f32(R_MAX(mbrot));
+    float32x4_t dx    = vdupq_n_f32(DX(mbrot));
+    float32x4_t _3210 = {3.f, 2.f, 1.f, 0.f};
+    uint32_t *Pixels = PIXELS(mbrot);
     
-    // __m128   x00     = _mm_add_ps(_mm_set1_ps(x0), _mm_mul_ps(_3210, dx)), 
-    //          y00     = _mm_set1_ps(y0); 
-    // __m128   _4      = _mm_set1_ps(4.f);
-    // __m128   _255    = _mm_set1_ps(255.f);
+    float32x4_t x00     = vaddq_f32(vdupq_n_f32(x0), vmulq_f32(_3210, dx)), 
+                y00     = vdupq_n_f32(y0); 
+    float32x4_t _4 = vdupq_n_f32(4.f);
+    [[maybe_unused]] float32x4_t _255 = vdupq_n_f32(255.f);
 
-    // for (int xi = 0; xi < WIDTH(mbrot); xi += 4, x00 = _mm_add_ps(x00, _mm_mul_ps(dx, _4)))
-    // {
-    //     __m128i n = getColor(x00, y00, n_max, r_max);
+    for (int xi = 0; xi < WIDTH(mbrot); xi += 4, x00 = vaddq_f32(x00, vmulq_f32(dx, _4)))
+    {
+        int32x4_t n = getColor(x00, y00, n_max, r_max);
         
-    //     uint32_t *pn = (uint32_t *) &n;
+        uint32_t *pn = (uint32_t *) &n;
         
-    //     for (int i = 0; i < 4; ++i)
-    //     {
-    //         int pix = pn[i]; 
-    //         Pixels[xi + i]  = 0xFF000000 + sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
-    //     }
-    // }
+        for (int i = 0; i < 4; ++i)
+        {
+            int pix = pn[i]; 
+            Pixels[xi + i]  = 0xFF000000 + sin(pix) * (2 << 20) + pow(pix, 2) * (2 << 11) + tan(pix) * (2 << 15);
+        }
+    }
 
     return 0;
 }

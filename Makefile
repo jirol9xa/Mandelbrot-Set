@@ -22,11 +22,9 @@ clear:
 drawNoAVX.o:	noAVX/drawNoAVX.cpp
 	$(CC)	-c noAVX/drawNoAVX.cpp			 $(I_FLAG) $(DEBUG_FLAGS)
 
-1-mainAVX.o:	AVX/1-mainAVX.cpp
-	$(CC)	$(C_FLAGS)	AVX/1-mainAVX.cpp 	 $(I_FLAG) 
 1-mainAVX128.o:	AVX/1-mainAVX128.cpp
-	$(CC)	$(C_FLAGS) 	AVX/1-mainAVX128.cpp $(I_FLAG)
+	$(CC)	$(C_FLAGS) 	AVX/1-mainAVX128.cpp $(I_FLAG) $(DEBUG_FLAGS)
 1-AVX128.o: 	AVX/1-AVX128.cpp
-	$(CC)	$(C_FLAGS)	AVX/1-AVX128.cpp  $(I_FLAG)
+	$(CC)	$(C_FLAGS)	AVX/1-AVX128.cpp  $(I_FLAG) $(DEBUG_FLAGS)
 drawAVX128.o:		AVX/drawAVX128.cpp
-	$(CC)	$(C_FLAGS)	AVX/drawAVX128.cpp   $(I_FLAG) 
+	$(CC)	$(C_FLAGS)	AVX/drawAVX128.cpp   $(I_FLAG) $(DEBUG_FLAGS)
