@@ -16,7 +16,7 @@
         const int width  = 1200;      // window
         const int heigth = 800;       //settings
 
-        const int n_max  = 256;
+        const unsigned int n_max  = 256;
         const float r_max  = 4.f;
 
         float scale = 1.f;

@@ -84,7 +84,7 @@ static uint32x4_t getColor(float32x4_t x0, float32x4_t y0, const int n_max, floa
         y = XY + XY + y0;
     }
 
-    return {0, 0, 0, 0};
+    return N;
 }
 
 // static uint32x4_t getColor(float32x4_t x0, float32x4_t y0, const int n_max, float32x4_t r_max)
@@ -180,6 +180,7 @@ static int fillString(Mandelbrot *mbrot, float x0, float y0)
     for (int xi = 0; xi < WIDTH(mbrot); xi += 4, x00 += dx * 4)
     {
         uint32x4_t pixelx4 = getColor(x00, y00, N_MAX(mbrot), r_max);
+        pixelx4 %= {N_MAX(mbrot), N_MAX(mbrot), N_MAX(mbrot), N_MAX(mbrot)};
         
 #define SET_PIXEL(pix_num)  do                                                                                      \
 {                                                                                                                   \
